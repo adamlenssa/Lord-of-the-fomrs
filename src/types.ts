@@ -1,7 +1,7 @@
 export type UserInformation = {
-    firstName: string;
-    lastName: string;
-    email: string;
-    city: string;
-    phone: string;
-}
+  firstName: string | undefined;
+  lastName: string | undefined;
+  email: string | undefined;
+  city: string | undefined;
+  phone: string | undefined;
+};

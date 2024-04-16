@@ -1,6 +1,12 @@
 import { UserInformation } from "./types";
 
-export const InfoRow = ({ label, value }: { label: string; value: string }) => {
+export const InfoRow = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | undefined;
+}) => {
   return (
     <div>
       <span style={{ marginRight: 5 }}>
@@ -39,7 +45,7 @@ export const ProfileInformation = ({
         <InfoRow label="Last Name" value={lastName} />
         <InfoRow label="City" value={city} />
         {/* You will need to format the string "nnnnnnn" as "nn-nn-nn-n" */}
-        <InfoRow label="Phone" value={"12-34-56-7"} />
+        <InfoRow label="Phone" value={phone} />
       </div>
     </>
   );
