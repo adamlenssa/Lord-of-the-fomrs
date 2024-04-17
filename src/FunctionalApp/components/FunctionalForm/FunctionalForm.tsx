@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
-import { ErrorMessage } from "../ErrorMessage";
-import InputCreator from "./components/InputCreator/InputCreator";
-import PhoneNumberComponent from "./components/PhoneNumberComponent/PhoneNumberComponent";
-import { UserInformation } from "../types";
-import { allCities } from "../utils/all-cities";
+import { ErrorMessage } from "../../../ErrorMessage";
+import InputCreator from "./InputCreator/InputCreator";
+import PhoneNumberComponent from "./PhoneNumberComponent/PhoneNumberComponent";
+import { UserInformation } from "../../../types";
+import { allCities } from "../../../utils/all-cities";
 
 const firstNameErrorMessage = "First name must be at least 2 characters long";
 const lastNameErrorMessage = "Last name must be at least 2 characters long";
@@ -20,10 +20,8 @@ export type userInput = {
 };
 export const FunctionalForm = ({
   userData,
-  errorInformation,
 }: {
   userData: (userData: UserInformation) => void;
-  errorInformation: UserInformation | null;
 }) => {
   const [phoneNumber, setPhoneNumber] = useState<PhoneNumberState>([
     "",
@@ -48,7 +46,6 @@ export const FunctionalForm = ({
   const cityErrorShow = !allCities.find((city) => city == userInfo?.city);
   const joined = phoneNumber.join("");
   const phoneNumberErrorShow = joined.length != 7;
-  console.log(trigger);
   return (
     <form
       onSubmit={(e) => {

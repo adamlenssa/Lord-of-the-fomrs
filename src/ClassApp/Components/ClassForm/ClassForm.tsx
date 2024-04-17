@@ -1,17 +1,17 @@
 import { Component, createRef } from "react";
-import { ErrorMessage } from "../ErrorMessage";
-import InputCreator from "./Components/InputCreator/InputCreator";
-import PhoneNumber, {
-  PhoneNumberState,
-} from "./Components/PhoneNumber/PhoneNumber";
-import { userInput } from "../FunctionalApp/FunctionalForm";
-import { UserInformation } from "../types";
+import { ErrorMessage } from "../../../ErrorMessage";
+import InputCreator from "./InputCreator/InputCreator";
+import PhoneNumber, { PhoneNumberState } from "./PhoneNumber/PhoneNumber";
+import { allCities } from "../../../utils/all-cities";
+import { userInput } from "../../../FunctionalApp/components/FunctionalForm/FunctionalForm";
+import { UserInformation } from "../../../types";
 
 const firstNameErrorMessage = "First name must be at least 2 characters long";
 const lastNameErrorMessage = "Last name must be at least 2 characters long";
 const emailErrorMessage = "Email is Invalid";
 const cityErrorMessage = "State is Invalid";
 const phoneNumberErrorMessage = "Invalid Phone Number";
+let trigger = false;
 type state = {
   userInformation: userInput | null;
   phoneNumber: PhoneNumberState;
@@ -21,7 +21,12 @@ export class ClassForm extends Component<{
   userData: (userData: UserInformation) => void;
 }> {
   state: state = {
-    userInformation: null,
+    userInformation: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      city: "",
+    },
     phoneNumber: ["", "", "", ""],
   };
   handleDataChange = (data: PhoneNumberState) => {
@@ -30,14 +35,47 @@ export class ClassForm extends Component<{
       phoneNumber: data,
     });
   };
+
   render() {
     const { userData } = this.props;
     const { userInformation, phoneNumber } = this.state;
     const sumbitRef = createRef<HTMLInputElement>();
+    const firstNameErrorShow = userInformation?.firstName?.length < 2;
+    const lastNameErrorShow = userInformation?.lastName?.length < 2;
+    const emailErrorShow = !userInformation?.email?.includes("@");
+    const cityErrorShow = !allCities.find(
+      (city) => city == userInformation?.city
+    );
+    const joined = phoneNumber.join("");
+    const phoneNumberErrorShow = joined.length != 7;
+    console.log(trigger);
     return (
       <form
         onSubmit={(e) => {
           e.preventDefault();
+          if (
+            !firstNameErrorShow &&
+            !lastNameErrorShow &&
+            !emailErrorShow &&
+            !cityErrorShow &&
+            !phoneNumberErrorShow
+          ) {
+            userData({
+              firstName: userInformation?.firstName,
+              lastName: userInformation?.lastName,
+              email: userInformation?.email,
+              city: userInformation?.city,
+              phone: phoneNumber.join("-"),
+            });
+            this.setState({
+              userInformation: null,
+              phoneNumber: ["", "", "", ""],
+            });
+            trigger = false;
+          } else {
+            trigger = true;
+            console.log(trigger);
+          }
         }}
       >
         <u>
@@ -51,6 +89,7 @@ export class ClassForm extends Component<{
             props={{
               type: "text",
               placeholder: "Frodo",
+              value: userInformation?.firstName,
               onChange: (e) => {
                 this.setState({
                   userInformation: {
@@ -65,7 +104,10 @@ export class ClassForm extends Component<{
             }}
           />
         </div>
-        <ErrorMessage message={firstNameErrorMessage} show={true} />
+        <ErrorMessage
+          message={firstNameErrorMessage}
+          show={Boolean(trigger && firstNameErrorShow)}
+        />
 
         {/* last name input */}
         <div className="input-wrap">
@@ -74,6 +116,7 @@ export class ClassForm extends Component<{
             props={{
               type: "text",
               placeholder: "Baggins",
+              value: userInformation?.lastName,
               onChange: (e) => {
                 this.setState({
                   userInformation: {
@@ -88,7 +131,10 @@ export class ClassForm extends Component<{
             }}
           />
         </div>
-        <ErrorMessage message={lastNameErrorMessage} show={true} />
+        <ErrorMessage
+          message={lastNameErrorMessage}
+          show={Boolean(trigger && lastNameErrorShow)}
+        />
 
         {/* Email Input */}
         <div className="input-wrap">
@@ -97,10 +143,11 @@ export class ClassForm extends Component<{
             props={{
               type: "text",
               placeholder: "bilbo-baggins@adventurehobbits.net",
+              value: userInformation?.email,
               onChange: (e) => {
                 this.setState({
                   userInformation: {
-                    firstName: userInformation?.email,
+                    firstName: userInformation?.firstName,
                     lastName: userInformation?.lastName,
                     email: e.target.value,
                     city: userInformation?.city,
@@ -111,7 +158,10 @@ export class ClassForm extends Component<{
             }}
           />
         </div>
-        <ErrorMessage message={emailErrorMessage} show={true} />
+        <ErrorMessage
+          message={emailErrorMessage}
+          show={Boolean(trigger && emailErrorShow)}
+        />
 
         {/* City Input */}
         <div className="input-wrap">
@@ -120,6 +170,7 @@ export class ClassForm extends Component<{
             props={{
               type: "text",
               placeholder: "Hobbiton",
+              value: userInformation?.city,
               list: "datalist",
               id: "city",
               onChange: (e) => {
@@ -136,7 +187,10 @@ export class ClassForm extends Component<{
             }}
           />
         </div>
-        <ErrorMessage message={cityErrorMessage} show={true} />
+        <ErrorMessage
+          message={cityErrorMessage}
+          show={Boolean(trigger && cityErrorShow)}
+        />
 
         <PhoneNumber
           phoneNumber={phoneNumber}
@@ -144,7 +198,10 @@ export class ClassForm extends Component<{
           handleData={this.handleDataChange}
         />
 
-        <ErrorMessage message={phoneNumberErrorMessage} show={true} />
+        <ErrorMessage
+          message={phoneNumberErrorMessage}
+          show={Boolean(trigger && phoneNumberErrorShow)}
+        />
 
         <input type="submit" value="Submit" ref={sumbitRef} />
       </form>

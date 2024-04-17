@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ProfileInformation } from "../ProfileInformation";
-import { FunctionalForm } from "./FunctionalForm";
+import { FunctionalForm } from "./components/FunctionalForm/FunctionalForm";
 import { UserInformation } from "../types";
 
 export const FunctionalApp = () => {

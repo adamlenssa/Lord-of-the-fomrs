@@ -1,5 +1,5 @@
 import React, { ChangeEventHandler, useRef } from "react";
-import { PhoneNumberState } from "../../FunctionalForm";
+import { PhoneNumberState } from "../FunctionalForm";
 
 function PhoneNumberComponent({
   phoneNumber,
