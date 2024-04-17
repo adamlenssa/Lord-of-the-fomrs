@@ -12,7 +12,7 @@ const cityErrorMessage = "State is Invalid";
 const phoneNumberErrorMessage = "Invalid Phone Number";
 let trigger = 1;
 export type PhoneNumberState = [string, string, string, string];
-type userInput = {
+export type userInput = {
   firstName: string | undefined;
   lastName: string | undefined;
   email: string | undefined;
