@@ -5,6 +5,7 @@ import PhoneNumber, {
   PhoneNumberState,
 } from "./Components/PhoneNumber/PhoneNumber";
 import { userInput } from "../FunctionalApp/FunctionalForm";
+import { UserInformation } from "../types";
 
 const firstNameErrorMessage = "First name must be at least 2 characters long";
 const lastNameErrorMessage = "Last name must be at least 2 characters long";
@@ -16,7 +17,9 @@ type state = {
   phoneNumber: PhoneNumberState;
 };
 
-export class ClassForm extends Component {
+export class ClassForm extends Component<{
+  userData: (userData: UserInformation) => void;
+}> {
   state: state = {
     userInformation: null,
     phoneNumber: ["", "", "", ""],
@@ -28,9 +31,15 @@ export class ClassForm extends Component {
     });
   };
   render() {
+    const { userData } = this.props;
+    const { userInformation, phoneNumber } = this.state;
     const sumbitRef = createRef<HTMLInputElement>();
     return (
-      <form>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
+      >
         <u>
           <h3>User Information Form</h3>
         </u>
@@ -39,7 +48,21 @@ export class ClassForm extends Component {
         <div className="input-wrap">
           <InputCreator
             name="First Name"
-            props={{ type: "text", placeholder: "Frodo" }}
+            props={{
+              type: "text",
+              placeholder: "Frodo",
+              onChange: (e) => {
+                this.setState({
+                  userInformation: {
+                    firstName: e.target.value,
+                    lastName: userInformation?.lastName,
+                    email: userInformation?.email,
+                    city: userInformation?.city,
+                  },
+                  phoneNumber: phoneNumber,
+                });
+              },
+            }}
           />
         </div>
         <ErrorMessage message={firstNameErrorMessage} show={true} />
@@ -48,7 +71,21 @@ export class ClassForm extends Component {
         <div className="input-wrap">
           <InputCreator
             name="Last Name"
-            props={{ type: "text", placeholder: "Baggins" }}
+            props={{
+              type: "text",
+              placeholder: "Baggins",
+              onChange: (e) => {
+                this.setState({
+                  userInformation: {
+                    firstName: userInformation?.firstName,
+                    lastName: e.target.value,
+                    email: userInformation?.email,
+                    city: userInformation?.city,
+                  },
+                  phoneNumber: phoneNumber,
+                });
+              },
+            }}
           />
         </div>
         <ErrorMessage message={lastNameErrorMessage} show={true} />
@@ -60,6 +97,17 @@ export class ClassForm extends Component {
             props={{
               type: "text",
               placeholder: "bilbo-baggins@adventurehobbits.net",
+              onChange: (e) => {
+                this.setState({
+                  userInformation: {
+                    firstName: userInformation?.email,
+                    lastName: userInformation?.lastName,
+                    email: e.target.value,
+                    city: userInformation?.city,
+                  },
+                  phoneNumber: phoneNumber,
+                });
+              },
             }}
           />
         </div>
@@ -74,13 +122,24 @@ export class ClassForm extends Component {
               placeholder: "Hobbiton",
               list: "datalist",
               id: "city",
+              onChange: (e) => {
+                this.setState({
+                  userInformation: {
+                    firstName: userInformation?.firstName,
+                    lastName: userInformation?.lastName,
+                    email: userInformation?.email,
+                    city: e.target.value,
+                  },
+                  phoneNumber: phoneNumber,
+                });
+              },
             }}
           />
         </div>
         <ErrorMessage message={cityErrorMessage} show={true} />
 
         <PhoneNumber
-          phoneNumber={this.state.phoneNumber}
+          phoneNumber={phoneNumber}
           submitRef={sumbitRef}
           handleData={this.handleDataChange}
         />
