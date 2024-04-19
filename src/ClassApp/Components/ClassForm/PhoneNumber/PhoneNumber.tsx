@@ -3,11 +3,10 @@ export type PhoneNumberState = [string, string, string, string];
 
 export class PhoneNumber extends Component<{
   phoneNumber: PhoneNumberState;
-  submitRef: React.RefObject<HTMLInputElement>;
   handleData: (data: PhoneNumberState) => void;
 }> {
   render() {
-    const { phoneNumber, submitRef, handleData } = this.props;
+    const { phoneNumber, handleData } = this.props;
     const refs = [
       createRef<HTMLInputElement>(),
       createRef<HTMLInputElement>(),
@@ -26,13 +25,11 @@ export class PhoneNumber extends Component<{
         const value = e.target.value;
         if (value.length == currentMaxLength && nextRef) {
           nextRef.current?.focus();
-        } else if (value.length == currentMaxLength && currentRef == refs[3]) {
-          submitRef.current?.focus();
         }
         if (value.length == 0 && prevRef) {
           prevRef.current?.focus();
         } else if (value.length == 0 && currentRef == ref0) {
-          currentRef.current?.focus();
+          currentRef.current?.value;
         }
         const newState = phoneNumber.map((section, phoneIndex) =>
           index === phoneIndex ? e.target.value : section
@@ -50,6 +47,7 @@ export class PhoneNumber extends Component<{
             value={phoneNumber[0]}
             onChange={createOnChangeFunction(0)}
             ref={ref0}
+            maxLength={2}
           />
           -
           <input
@@ -59,6 +57,7 @@ export class PhoneNumber extends Component<{
             value={phoneNumber[1]}
             onChange={createOnChangeFunction(1)}
             ref={ref1}
+            maxLength={2}
           />
           -
           <input
@@ -68,6 +67,7 @@ export class PhoneNumber extends Component<{
             value={phoneNumber[2]}
             onChange={createOnChangeFunction(2)}
             ref={ref2}
+            maxLength={2}
           />
           -
           <input
@@ -77,6 +77,7 @@ export class PhoneNumber extends Component<{
             value={phoneNumber[3]}
             onChange={createOnChangeFunction(3)}
             ref={ref3}
+            maxLength={1}
           />
         </div>
       </div>

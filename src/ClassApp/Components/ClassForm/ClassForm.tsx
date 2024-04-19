@@ -5,22 +5,23 @@ import PhoneNumber, { PhoneNumberState } from "./PhoneNumber/PhoneNumber";
 import { allCities } from "../../../utils/all-cities";
 import { userInput } from "../../../FunctionalApp/components/FunctionalForm/FunctionalForm";
 import { UserInformation } from "../../../types";
+import { isEmailValid } from "../../../utils/validations";
 
 const firstNameErrorMessage = "First name must be at least 2 characters long";
 const lastNameErrorMessage = "Last name must be at least 2 characters long";
 const emailErrorMessage = "Email is Invalid";
 const cityErrorMessage = "State is Invalid";
 const phoneNumberErrorMessage = "Invalid Phone Number";
-let trigger = false;
-type state = {
-  userInformation: userInput | null;
+type State = {
+  userInformation: userInput;
   phoneNumber: PhoneNumberState;
+  trigger: boolean;
 };
 
 export class ClassForm extends Component<{
   userData: (userData: UserInformation) => void;
 }> {
-  state: state = {
+  state: State = {
     userInformation: {
       firstName: "",
       lastName: "",
@@ -28,6 +29,7 @@ export class ClassForm extends Component<{
       city: "",
     },
     phoneNumber: ["", "", "", ""],
+    trigger: false,
   };
   handleDataChange = (data: PhoneNumberState) => {
     this.setState({
@@ -35,20 +37,31 @@ export class ClassForm extends Component<{
       phoneNumber: data,
     });
   };
+  reset = () => {
+    this.setState({
+      userInformation: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        city: "",
+      },
+      phoneNumber: ["", "", "", ""],
+      trigger: false,
+    });
+  };
 
   render() {
     const { userData } = this.props;
-    const { userInformation, phoneNumber } = this.state;
+    const { userInformation, phoneNumber, trigger } = this.state;
     const sumbitRef = createRef<HTMLInputElement>();
-    const firstNameErrorShow = userInformation?.firstName?.length < 2;
-    const lastNameErrorShow = userInformation?.lastName?.length < 2;
-    const emailErrorShow = !userInformation?.email?.includes("@");
+    const firstNameErrorShow = userInformation.firstName.length < 2;
+    const lastNameErrorShow = userInformation.lastName.length < 2;
+    const emailErrorShow = !isEmailValid(userInformation.email);
     const cityErrorShow = !allCities.find(
-      (city) => city == userInformation?.city
+      (city) => city == userInformation.city
     );
     const joined = phoneNumber.join("");
     const phoneNumberErrorShow = joined.length != 7;
-    console.log(trigger);
     return (
       <form
         onSubmit={(e) => {
@@ -61,20 +74,18 @@ export class ClassForm extends Component<{
             !phoneNumberErrorShow
           ) {
             userData({
-              firstName: userInformation?.firstName,
-              lastName: userInformation?.lastName,
-              email: userInformation?.email,
-              city: userInformation?.city,
+              firstName: userInformation.firstName,
+              lastName: userInformation.lastName,
+              email: userInformation.email,
+              city: userInformation.city,
               phone: phoneNumber.join("-"),
             });
-            this.setState({
-              userInformation: null,
-              phoneNumber: ["", "", "", ""],
-            });
-            trigger = false;
+            this.reset();
           } else {
-            trigger = true;
-            console.log(trigger);
+            alert("Bad Information");
+            this.setState({
+              trigger: true,
+            });
           }
         }}
       >
@@ -89,17 +100,18 @@ export class ClassForm extends Component<{
             props={{
               type: "text",
               placeholder: "Frodo",
-              value: userInformation?.firstName,
+              value: userInformation.firstName,
               onChange: (e) => {
                 this.setState({
                   userInformation: {
                     firstName: e.target.value,
-                    lastName: userInformation?.lastName,
-                    email: userInformation?.email,
-                    city: userInformation?.city,
+                    lastName: userInformation.lastName,
+                    email: userInformation.email,
+                    city: userInformation.city,
                   },
                   phoneNumber: phoneNumber,
                 });
+                console.log(userInformation.firstName);
               },
             }}
           />
@@ -116,17 +128,18 @@ export class ClassForm extends Component<{
             props={{
               type: "text",
               placeholder: "Baggins",
-              value: userInformation?.lastName,
+              value: userInformation.lastName,
               onChange: (e) => {
                 this.setState({
                   userInformation: {
-                    firstName: userInformation?.firstName,
+                    firstName: userInformation.firstName,
                     lastName: e.target.value,
-                    email: userInformation?.email,
-                    city: userInformation?.city,
+                    email: userInformation.email,
+                    city: userInformation.city,
                   },
                   phoneNumber: phoneNumber,
                 });
+                console.log(userInformation.lastName);
               },
             }}
           />
@@ -143,17 +156,18 @@ export class ClassForm extends Component<{
             props={{
               type: "text",
               placeholder: "bilbo-baggins@adventurehobbits.net",
-              value: userInformation?.email,
+              value: userInformation.email,
               onChange: (e) => {
                 this.setState({
                   userInformation: {
-                    firstName: userInformation?.firstName,
-                    lastName: userInformation?.lastName,
+                    firstName: userInformation.firstName,
+                    lastName: userInformation.lastName,
                     email: e.target.value,
-                    city: userInformation?.city,
+                    city: userInformation.city,
                   },
                   phoneNumber: phoneNumber,
                 });
+                console.log(userInformation.email);
               },
             }}
           />
@@ -170,19 +184,20 @@ export class ClassForm extends Component<{
             props={{
               type: "text",
               placeholder: "Hobbiton",
-              value: userInformation?.city,
+              value: userInformation.city,
               list: "datalist",
               id: "city",
               onChange: (e) => {
                 this.setState({
                   userInformation: {
-                    firstName: userInformation?.firstName,
-                    lastName: userInformation?.lastName,
-                    email: userInformation?.email,
+                    firstName: userInformation.firstName,
+                    lastName: userInformation.lastName,
+                    email: userInformation.email,
                     city: e.target.value,
                   },
                   phoneNumber: phoneNumber,
                 });
+                console.log(userInformation.city);
               },
             }}
           />
@@ -194,7 +209,6 @@ export class ClassForm extends Component<{
 
         <PhoneNumber
           phoneNumber={phoneNumber}
-          submitRef={sumbitRef}
           handleData={this.handleDataChange}
         />
 

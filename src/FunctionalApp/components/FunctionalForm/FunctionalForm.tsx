@@ -1,22 +1,22 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { ErrorMessage } from "../../../ErrorMessage";
 import InputCreator from "./InputCreator/InputCreator";
 import PhoneNumberComponent from "./PhoneNumberComponent/PhoneNumberComponent";
 import { UserInformation } from "../../../types";
 import { allCities } from "../../../utils/all-cities";
+import { isEmailValid } from "../../../utils/validations";
 
 const firstNameErrorMessage = "First name must be at least 2 characters long";
 const lastNameErrorMessage = "Last name must be at least 2 characters long";
 const emailErrorMessage = "Email is Invalid";
 const cityErrorMessage = "State is Invalid";
 const phoneNumberErrorMessage = "Invalid Phone Number";
-let trigger = 1;
 export type PhoneNumberState = [string, string, string, string];
 export type userInput = {
-  firstName: string | undefined;
-  lastName: string | undefined;
-  email: string | undefined;
-  city: string | undefined;
+  firstName: string;
+  lastName: string;
+  email: string;
+  city: string;
 };
 export const FunctionalForm = ({
   userData,
@@ -29,21 +29,21 @@ export const FunctionalForm = ({
     "",
     "",
   ]);
-  const [userInfo, setUserInformation] = useState<userInput | null>({
+  const [userInputs, setUserInputs] = useState<userInput>({
     firstName: "",
     lastName: "",
     email: "",
     city: "",
   });
-  const firstNameInput = userInfo?.firstName;
-  const lastNameInput = userInfo?.lastName;
-  const emailInput = userInfo?.email;
-  const cityInput = userInfo?.city;
-  const sumbitRef = useRef<HTMLInputElement>(null);
-  const firstNameErrorShow = userInfo?.firstName?.length < 2;
-  const lastNameErrorShow = userInfo?.lastName?.length < 2;
-  const emailErrorShow = !userInfo?.email?.includes("@");
-  const cityErrorShow = !allCities.find((city) => city == userInfo?.city);
+  const [trigger, setTrigger] = useState<boolean>(false);
+  const firstNameInput = userInputs.firstName;
+  const lastNameInput = userInputs.lastName;
+  const emailInput = userInputs.email;
+  const cityInput = userInputs.city;
+  const firstNameErrorShow = userInputs.firstName.length < 2;
+  const lastNameErrorShow = userInputs.lastName.length < 2;
+  const emailErrorShow = !isEmailValid(userInputs.email);
+  const cityErrorShow = !allCities.find((city) => city == userInputs.city);
   const joined = phoneNumber.join("");
   const phoneNumberErrorShow = joined.length != 7;
   return (
@@ -58,23 +58,23 @@ export const FunctionalForm = ({
           !phoneNumberErrorShow
         ) {
           userData({
-            firstName: userInfo?.firstName,
-            lastName: userInfo?.lastName,
-            email: userInfo?.email,
-            city: userInfo?.city,
+            firstName: userInputs.firstName,
+            lastName: userInputs.lastName,
+            email: userInputs.email,
+            city: userInputs.city,
             phone: phoneNumber.join("-"),
           });
-          setUserInformation({
+          setUserInputs({
             firstName: "",
             lastName: "",
             email: "",
             city: "",
           });
           setPhoneNumber(["", "", "", ""]);
-          trigger = 1;
+          setTrigger(false);
         } else {
           alert("Improper Information");
-          trigger = 2;
+          setTrigger(true);
         }
       }}
     >
@@ -89,21 +89,21 @@ export const FunctionalForm = ({
             type: "text",
             placeholder: "Frodo",
             onChange: (e) => {
-              setUserInformation({
+              setUserInputs({
                 firstName: e.target.value,
                 lastName: lastNameInput,
                 email: emailInput,
                 city: cityInput,
               });
             },
-            value: userInfo?.firstName,
+            value: userInputs.firstName,
           }}
           name="First Name"
         />
       </div>
       <ErrorMessage
         message={firstNameErrorMessage}
-        show={Boolean(trigger == 2 && firstNameErrorShow)}
+        show={Boolean(trigger && firstNameErrorShow)}
       />
       {/* last name input */}
       <div className="input-wrap">
@@ -112,21 +112,21 @@ export const FunctionalForm = ({
             type: "text",
             placeholder: "Baggins",
             onChange: (e) => {
-              setUserInformation({
+              setUserInputs({
                 firstName: firstNameInput,
                 lastName: e.target.value,
                 email: emailInput,
                 city: cityInput,
               });
             },
-            value: userInfo?.lastName,
+            value: userInputs.lastName,
           }}
           name="Last Name"
         />
       </div>
       <ErrorMessage
         message={lastNameErrorMessage}
-        show={Boolean(trigger == 2 && lastNameErrorShow)}
+        show={Boolean(trigger && lastNameErrorShow)}
       />
 
       {/* Email Input */}
@@ -136,21 +136,21 @@ export const FunctionalForm = ({
             type: "text",
             placeholder: "bilbo-baggins@adventurehobbits.net",
             onChange: (e) => {
-              setUserInformation({
+              setUserInputs({
                 firstName: firstNameInput,
                 lastName: lastNameInput,
                 email: e.target.value,
                 city: cityInput,
               });
             },
-            value: userInfo?.email,
+            value: userInputs.email,
           }}
           name="Email"
         />
       </div>
       <ErrorMessage
         message={emailErrorMessage}
-        show={Boolean(trigger == 2 && emailErrorShow)}
+        show={Boolean(trigger && emailErrorShow)}
       />
       {/* City Input */}
       <div className="input-wrap">
@@ -160,9 +160,9 @@ export const FunctionalForm = ({
             placeholder: "Hobbiton",
             list: "datalist",
             id: "city",
-            value: userInfo?.city,
+            value: userInputs.city,
             onChange: (e) => {
-              setUserInformation({
+              setUserInputs({
                 firstName: firstNameInput,
                 lastName: lastNameInput,
                 email: emailInput,
@@ -182,21 +182,20 @@ export const FunctionalForm = ({
       </div>
       <ErrorMessage
         message={cityErrorMessage}
-        show={Boolean(trigger == 2 && cityErrorShow)}
+        show={Boolean(trigger && cityErrorShow)}
       />
 
       <PhoneNumberComponent
         phoneNumber={phoneNumber}
         setPhoneNumber={setPhoneNumber}
-        submitRef={sumbitRef}
       />
 
       <ErrorMessage
         message={phoneNumberErrorMessage}
-        show={Boolean(trigger == 2 && phoneNumberErrorShow)}
+        show={Boolean(trigger && phoneNumberErrorShow)}
       />
 
-      <input type="submit" value="Submit" ref={sumbitRef} />
+      <input type="submit" value="Submit" />
     </form>
   );
 };

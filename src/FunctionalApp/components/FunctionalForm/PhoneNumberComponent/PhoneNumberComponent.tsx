@@ -4,11 +4,9 @@ import { PhoneNumberState } from "../FunctionalForm";
 function PhoneNumberComponent({
   phoneNumber,
   setPhoneNumber,
-  submitRef,
 }: {
   phoneNumber: PhoneNumberState;
   setPhoneNumber: React.Dispatch<React.SetStateAction<PhoneNumberState>>;
-  submitRef: React.RefObject<HTMLInputElement>;
 }) {
   const refs = [
     useRef<HTMLInputElement>(null),
@@ -29,7 +27,7 @@ function PhoneNumberComponent({
       if (value.length == currentMaxLength && nextRef) {
         nextRef.current?.focus();
       } else if (value.length == currentMaxLength && currentRef == refs[3]) {
-        submitRef.current?.focus();
+        currentRef.current?.focus();
       }
       if (value.length == 0 && prevRef) {
         prevRef.current?.focus();
@@ -50,6 +48,7 @@ function PhoneNumberComponent({
           value={phoneNumber[0]}
           onChange={createOnChangeFunction(0)}
           ref={ref0}
+          maxLength={2}
         />
         -
         <input
@@ -59,6 +58,7 @@ function PhoneNumberComponent({
           value={phoneNumber[1]}
           onChange={createOnChangeFunction(1)}
           ref={ref1}
+          maxLength={2}
         />
         -
         <input
@@ -68,6 +68,7 @@ function PhoneNumberComponent({
           value={phoneNumber[2]}
           onChange={createOnChangeFunction(2)}
           ref={ref2}
+          maxLength={2}
         />
         -
         <input
@@ -77,6 +78,7 @@ function PhoneNumberComponent({
           value={phoneNumber[3]}
           onChange={createOnChangeFunction(3)}
           ref={ref3}
+          maxLength={1}
         />
       </div>
     </div>

@@ -14,7 +14,6 @@ export const FunctionalApp = () => {
         userData={(UserInformation) => {
           setUserInformation(UserInformation);
         }}
-        errorInformation={userInformation}
       />
     </>
   );
