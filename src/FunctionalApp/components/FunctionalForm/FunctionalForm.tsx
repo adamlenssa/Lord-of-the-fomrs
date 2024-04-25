@@ -4,7 +4,11 @@ import InputCreator from "./InputCreator/InputCreator";
 import PhoneNumberComponent from "./PhoneNumberComponent/PhoneNumberComponent";
 import { UserInformation } from "../../../types";
 import { allCities } from "../../../utils/all-cities";
-import { isEmailValid } from "../../../utils/validations";
+import {
+  isCityValid,
+  isEmailValid,
+  isPhoneValid,
+} from "../../../utils/validations";
 
 const firstNameErrorMessage = "First name must be at least 2 characters long";
 const lastNameErrorMessage = "Last name must be at least 2 characters long";
@@ -19,9 +23,9 @@ export type userInput = {
   city: string;
 };
 export const FunctionalForm = ({
-  userData,
+  setUserData,
 }: {
-  userData: (userData: UserInformation) => void;
+  setUserData: (userData: UserInformation) => void;
 }) => {
   const [phoneNumber, setPhoneNumber] = useState<PhoneNumberState>([
     "",
@@ -43,7 +47,7 @@ export const FunctionalForm = ({
   const firstNameErrorShow = userInputs.firstName.length < 2;
   const lastNameErrorShow = userInputs.lastName.length < 2;
   const emailErrorShow = !isEmailValid(userInputs.email);
-  const cityErrorShow = !allCities.find((city) => city == userInputs.city);
+  const cityErrorShow = isCityValid(userInputs.city);
   const joined = phoneNumber.join("");
   const phoneNumberErrorShow = joined.length != 7;
   return (
@@ -57,7 +61,7 @@ export const FunctionalForm = ({
           !cityErrorShow &&
           !phoneNumberErrorShow
         ) {
-          userData({
+          setUserData({
             firstName: userInputs.firstName,
             lastName: userInputs.lastName,
             email: userInputs.email,
@@ -158,7 +162,7 @@ export const FunctionalForm = ({
           props={{
             type: "text",
             placeholder: "Hobbiton",
-            list: "datalist",
+            list: "cities",
             id: "city",
             value: userInputs.city,
             onChange: (e) => {
@@ -172,17 +176,10 @@ export const FunctionalForm = ({
           }}
           name="City"
         />
-        <datalist id="datalist">
-          {allCities.map((city) => (
-            <option value={city} key={city}>
-              {city}
-            </option>
-          ))}
-        </datalist>
       </div>
       <ErrorMessage
         message={cityErrorMessage}
-        show={Boolean(trigger && cityErrorShow)}
+        show={Boolean(trigger && isCityValid(userInputs.city))}
       />
 
       <PhoneNumberComponent
@@ -192,7 +189,7 @@ export const FunctionalForm = ({
 
       <ErrorMessage
         message={phoneNumberErrorMessage}
-        show={Boolean(trigger && phoneNumberErrorShow)}
+        show={Boolean(trigger && isPhoneValid(phoneNumber))}
       />
 
       <input type="submit" value="Submit" />

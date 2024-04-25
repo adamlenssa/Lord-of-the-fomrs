@@ -13,7 +13,7 @@ export class ClassApp extends Component<Record<string, never>, State> {
         <h2>Class</h2>
         <ProfileInformation userData={this.state.userInformation} />
         <ClassForm
-          userData={(userInformation) => {
+          setUserInputs={(userInformation) => {
             this.setState({ userInformation: userInformation });
           }}
         />

@@ -5,7 +5,11 @@ import PhoneNumber, { PhoneNumberState } from "./PhoneNumber/PhoneNumber";
 import { allCities } from "../../../utils/all-cities";
 import { userInput } from "../../../FunctionalApp/components/FunctionalForm/FunctionalForm";
 import { UserInformation } from "../../../types";
-import { isEmailValid } from "../../../utils/validations";
+import {
+  isCityValid,
+  isEmailValid,
+  isPhoneValid,
+} from "../../../utils/validations";
 
 const firstNameErrorMessage = "First name must be at least 2 characters long";
 const lastNameErrorMessage = "Last name must be at least 2 characters long";
@@ -19,7 +23,7 @@ type State = {
 };
 
 export class ClassForm extends Component<{
-  userData: (userData: UserInformation) => void;
+  setUserInputs: (userData: UserInformation) => void;
 }> {
   state: State = {
     userInformation: {
@@ -51,15 +55,13 @@ export class ClassForm extends Component<{
   };
 
   render() {
-    const { userData } = this.props;
+    const { setUserInputs } = this.props;
     const { userInformation, phoneNumber, trigger } = this.state;
     const sumbitRef = createRef<HTMLInputElement>();
     const firstNameErrorShow = userInformation.firstName.length < 2;
     const lastNameErrorShow = userInformation.lastName.length < 2;
     const emailErrorShow = !isEmailValid(userInformation.email);
-    const cityErrorShow = !allCities.find(
-      (city) => city == userInformation.city
-    );
+    const cityErrorShow = isCityValid(userInformation.city);
     const joined = phoneNumber.join("");
     const phoneNumberErrorShow = joined.length != 7;
     return (
@@ -73,7 +75,7 @@ export class ClassForm extends Component<{
             !cityErrorShow &&
             !phoneNumberErrorShow
           ) {
-            userData({
+            setUserInputs({
               firstName: userInformation.firstName,
               lastName: userInformation.lastName,
               email: userInformation.email,
@@ -94,117 +96,105 @@ export class ClassForm extends Component<{
         </u>
 
         {/* first name input */}
-        <div className="input-wrap">
-          <InputCreator
-            name="First Name"
-            props={{
-              type: "text",
-              placeholder: "Frodo",
-              value: userInformation.firstName,
-              onChange: (e) => {
-                this.setState({
-                  userInformation: {
-                    firstName: e.target.value,
-                    lastName: userInformation.lastName,
-                    email: userInformation.email,
-                    city: userInformation.city,
-                  },
-                  phoneNumber: phoneNumber,
-                });
-                console.log(userInformation.firstName);
-              },
-            }}
-          />
-        </div>
+        <InputCreator
+          name="First Name"
+          props={{
+            type: "text",
+            placeholder: "Frodo",
+            value: userInformation.firstName,
+            onChange: (e) => {
+              this.setState({
+                userInformation: {
+                  firstName: e.target.value,
+                  lastName: userInformation.lastName,
+                  email: userInformation.email,
+                  city: userInformation.city,
+                },
+                phoneNumber: phoneNumber,
+              });
+            },
+          }}
+        />
         <ErrorMessage
           message={firstNameErrorMessage}
           show={Boolean(trigger && firstNameErrorShow)}
         />
 
         {/* last name input */}
-        <div className="input-wrap">
-          <InputCreator
-            name="Last Name"
-            props={{
-              type: "text",
-              placeholder: "Baggins",
-              value: userInformation.lastName,
-              onChange: (e) => {
-                this.setState({
-                  userInformation: {
-                    firstName: userInformation.firstName,
-                    lastName: e.target.value,
-                    email: userInformation.email,
-                    city: userInformation.city,
-                  },
-                  phoneNumber: phoneNumber,
-                });
-                console.log(userInformation.lastName);
-              },
-            }}
-          />
-        </div>
+        <InputCreator
+          name="Last Name"
+          props={{
+            type: "text",
+            placeholder: "Baggins",
+            value: userInformation.lastName,
+            onChange: (e) => {
+              this.setState({
+                userInformation: {
+                  firstName: userInformation.firstName,
+                  lastName: e.target.value,
+                  email: userInformation.email,
+                  city: userInformation.city,
+                },
+                phoneNumber: phoneNumber,
+              });
+            },
+          }}
+        />
         <ErrorMessage
           message={lastNameErrorMessage}
           show={Boolean(trigger && lastNameErrorShow)}
         />
 
         {/* Email Input */}
-        <div className="input-wrap">
-          <InputCreator
-            name="Email"
-            props={{
-              type: "text",
-              placeholder: "bilbo-baggins@adventurehobbits.net",
-              value: userInformation.email,
-              onChange: (e) => {
-                this.setState({
-                  userInformation: {
-                    firstName: userInformation.firstName,
-                    lastName: userInformation.lastName,
-                    email: e.target.value,
-                    city: userInformation.city,
-                  },
-                  phoneNumber: phoneNumber,
-                });
-                console.log(userInformation.email);
-              },
-            }}
-          />
-        </div>
+        <InputCreator
+          name="Email"
+          props={{
+            type: "text",
+            placeholder: "bilbo-baggins@adventurehobbits.net",
+            value: userInformation.email,
+            onChange: (e) => {
+              this.setState({
+                userInformation: {
+                  firstName: userInformation.firstName,
+                  lastName: userInformation.lastName,
+                  email: e.target.value,
+                  city: userInformation.city,
+                },
+                phoneNumber: phoneNumber,
+              });
+            },
+          }}
+        />
         <ErrorMessage
           message={emailErrorMessage}
           show={Boolean(trigger && emailErrorShow)}
         />
 
         {/* City Input */}
-        <div className="input-wrap">
-          <InputCreator
-            name="City"
-            props={{
-              type: "text",
-              placeholder: "Hobbiton",
-              value: userInformation.city,
-              list: "datalist",
-              id: "city",
-              onChange: (e) => {
-                this.setState({
-                  userInformation: {
-                    firstName: userInformation.firstName,
-                    lastName: userInformation.lastName,
-                    email: userInformation.email,
-                    city: e.target.value,
-                  },
-                  phoneNumber: phoneNumber,
-                });
-                console.log(userInformation.city);
-              },
-            }}
-          />
-        </div>
+        <InputCreator
+          name="City"
+          props={{
+            type: "text",
+            placeholder: "Hobbiton",
+            value: userInformation.city,
+            list: "cities",
+            id: "city",
+            onChange: (e) => {
+              this.setState({
+                userInformation: {
+                  firstName: userInformation.firstName,
+                  lastName: userInformation.lastName,
+                  email: userInformation.email,
+                  city: e.target.value,
+                },
+                phoneNumber: phoneNumber,
+              });
+            },
+          }}
+        />
         <ErrorMessage
           message={cityErrorMessage}
-          show={Boolean(trigger && cityErrorShow)}
+          show={Boolean(trigger && isCityValid(userInformation.city))}
         />
 
         <PhoneNumber
@@ -214,7 +204,7 @@ export class ClassForm extends Component<{
 
         <ErrorMessage
           message={phoneNumberErrorMessage}
-          show={Boolean(trigger && phoneNumberErrorShow)}
+          show={Boolean(trigger && isPhoneValid(phoneNumber))}
         />
 
         <input type="submit" value="Submit" ref={sumbitRef} />
