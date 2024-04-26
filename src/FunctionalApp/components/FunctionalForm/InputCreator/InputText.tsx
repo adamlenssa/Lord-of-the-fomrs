@@ -1,6 +1,6 @@
 import { ComponentProps } from "react";
 
-function InputCreator({
+function InputText({
   props,
   name,
 }: {
@@ -8,11 +8,11 @@ function InputCreator({
   name: string;
 }) {
   return (
-    <>
+    <div className="input-wrap">
       <label htmlFor={name}>{name}:</label>
       <input {...props} name={name} />
-    </>
+    </div>
   );
 }
 
-export default InputCreator;
+export default InputText;

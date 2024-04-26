@@ -2,8 +2,7 @@ import { Component, createRef } from "react";
 import { ErrorMessage } from "../../../ErrorMessage";
 import InputCreator from "./InputCreator/InputCreator";
 import PhoneNumber, { PhoneNumberState } from "./PhoneNumber/PhoneNumber";
-import { allCities } from "../../../utils/all-cities";
-import { userInput } from "../../../FunctionalApp/components/FunctionalForm/FunctionalForm";
+import { UserInput } from "../../../FunctionalApp/components/FunctionalForm/FunctionalForm";
 import { UserInformation } from "../../../types";
 import {
   isCityValid,
@@ -17,7 +16,7 @@ const emailErrorMessage = "Email is Invalid";
 const cityErrorMessage = "State is Invalid";
 const phoneNumberErrorMessage = "Invalid Phone Number";
 type State = {
-  userInformation: userInput;
+  userInformation: UserInput;
   phoneNumber: PhoneNumberState;
   trigger: boolean;
 };

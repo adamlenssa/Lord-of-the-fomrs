@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { ErrorMessage } from "../../../ErrorMessage";
-import InputCreator from "./InputCreator/InputCreator";
+import InputText from "./InputCreator/InputText";
 import PhoneNumberComponent from "./PhoneNumberComponent/PhoneNumberComponent";
 import { UserInformation } from "../../../types";
-import { allCities } from "../../../utils/all-cities";
 import {
   isCityValid,
   isEmailValid,
@@ -16,7 +15,7 @@ const emailErrorMessage = "Email is Invalid";
 const cityErrorMessage = "State is Invalid";
 const phoneNumberErrorMessage = "Invalid Phone Number";
 export type PhoneNumberState = [string, string, string, string];
-export type userInput = {
+export type UserInput = {
   firstName: string;
   lastName: string;
   email: string;
@@ -33,13 +32,13 @@ export const FunctionalForm = ({
     "",
     "",
   ]);
-  const [userInputs, setUserInputs] = useState<userInput>({
+  const [userInputs, setUserInputs] = useState<UserInput>({
     firstName: "",
     lastName: "",
     email: "",
     city: "",
   });
-  const [trigger, setTrigger] = useState<boolean>(false);
+  const [errorShow, setErrorShow] = useState<boolean>(false);
   const firstNameInput = userInputs.firstName;
   const lastNameInput = userInputs.lastName;
   const emailInput = userInputs.email;
@@ -50,36 +49,39 @@ export const FunctionalForm = ({
   const cityErrorShow = isCityValid(userInputs.city);
   const joined = phoneNumber.join("");
   const phoneNumberErrorShow = joined.length != 7;
+  const reset = () => {
+    setUserInputs({
+      firstName: "",
+      lastName: "",
+      email: "",
+      city: "",
+    });
+    setPhoneNumber(["", "", "", ""]);
+    setErrorShow(false);
+  };
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
         if (
-          !firstNameErrorShow &&
-          !lastNameErrorShow &&
-          !emailErrorShow &&
-          !cityErrorShow &&
-          !phoneNumberErrorShow
+          firstNameErrorShow ||
+          lastNameErrorShow ||
+          emailErrorShow ||
+          cityErrorShow ||
+          phoneNumberErrorShow
         ) {
-          setUserData({
-            firstName: userInputs.firstName,
-            lastName: userInputs.lastName,
-            email: userInputs.email,
-            city: userInputs.city,
-            phone: phoneNumber.join("-"),
-          });
-          setUserInputs({
-            firstName: "",
-            lastName: "",
-            email: "",
-            city: "",
-          });
-          setPhoneNumber(["", "", "", ""]);
-          setTrigger(false);
-        } else {
           alert("Improper Information");
-          setTrigger(true);
+          setErrorShow(true);
+          return;
         }
+        setUserData({
+          firstName: userInputs.firstName,
+          lastName: userInputs.lastName,
+          email: userInputs.email,
+          city: userInputs.city,
+          phone: phoneNumber.join("-"),
+        });
+        reset();
       }}
     >
       <u>
@@ -87,99 +89,91 @@ export const FunctionalForm = ({
       </u>
 
       {/* first name input */}
-      <div className="input-wrap">
-        <InputCreator
-          props={{
-            type: "text",
-            placeholder: "Frodo",
-            onChange: (e) => {
-              setUserInputs({
-                firstName: e.target.value,
-                lastName: lastNameInput,
-                email: emailInput,
-                city: cityInput,
-              });
-            },
-            value: userInputs.firstName,
-          }}
-          name="First Name"
-        />
-      </div>
+      <InputText
+        props={{
+          type: "text",
+          placeholder: "Frodo",
+          onChange: (e) => {
+            setUserInputs({
+              firstName: e.target.value,
+              lastName: lastNameInput,
+              email: emailInput,
+              city: cityInput,
+            });
+          },
+          value: userInputs.firstName,
+        }}
+        name="First Name"
+      />
       <ErrorMessage
         message={firstNameErrorMessage}
-        show={Boolean(trigger && firstNameErrorShow)}
+        show={Boolean(errorShow && firstNameErrorShow)}
       />
       {/* last name input */}
-      <div className="input-wrap">
-        <InputCreator
-          props={{
-            type: "text",
-            placeholder: "Baggins",
-            onChange: (e) => {
-              setUserInputs({
-                firstName: firstNameInput,
-                lastName: e.target.value,
-                email: emailInput,
-                city: cityInput,
-              });
-            },
-            value: userInputs.lastName,
-          }}
-          name="Last Name"
-        />
-      </div>
+      <InputText
+        props={{
+          type: "text",
+          placeholder: "Baggins",
+          onChange: (e) => {
+            setUserInputs({
+              firstName: firstNameInput,
+              lastName: e.target.value,
+              email: emailInput,
+              city: cityInput,
+            });
+          },
+          value: userInputs.lastName,
+        }}
+        name="Last Name"
+      />
       <ErrorMessage
         message={lastNameErrorMessage}
-        show={Boolean(trigger && lastNameErrorShow)}
+        show={Boolean(errorShow && lastNameErrorShow)}
       />
 
       {/* Email Input */}
-      <div className="input-wrap">
-        <InputCreator
-          props={{
-            type: "text",
-            placeholder: "bilbo-baggins@adventurehobbits.net",
-            onChange: (e) => {
-              setUserInputs({
-                firstName: firstNameInput,
-                lastName: lastNameInput,
-                email: e.target.value,
-                city: cityInput,
-              });
-            },
-            value: userInputs.email,
-          }}
-          name="Email"
-        />
-      </div>
+      <InputText
+        props={{
+          type: "text",
+          placeholder: "bilbo-baggins@adventurehobbits.net",
+          onChange: (e) => {
+            setUserInputs({
+              firstName: firstNameInput,
+              lastName: lastNameInput,
+              email: e.target.value,
+              city: cityInput,
+            });
+          },
+          value: userInputs.email,
+        }}
+        name="Email"
+      />
       <ErrorMessage
         message={emailErrorMessage}
-        show={Boolean(trigger && emailErrorShow)}
+        show={Boolean(errorShow && emailErrorShow)}
       />
       {/* City Input */}
-      <div className="input-wrap">
-        <InputCreator
-          props={{
-            type: "text",
-            placeholder: "Hobbiton",
-            list: "cities",
-            id: "city",
-            value: userInputs.city,
-            onChange: (e) => {
-              setUserInputs({
-                firstName: firstNameInput,
-                lastName: lastNameInput,
-                email: emailInput,
-                city: e.target.value,
-              });
-            },
-          }}
-          name="City"
-        />
-      </div>
+      <InputText
+        props={{
+          type: "text",
+          placeholder: "Hobbiton",
+          list: "cities",
+          id: "city",
+          value: userInputs.city,
+          onChange: (e) => {
+            setUserInputs({
+              firstName: firstNameInput,
+              lastName: lastNameInput,
+              email: emailInput,
+              city: e.target.value,
+            });
+          },
+        }}
+        name="City"
+      />
       <ErrorMessage
         message={cityErrorMessage}
-        show={Boolean(trigger && isCityValid(userInputs.city))}
+        show={Boolean(errorShow && isCityValid(userInputs.city))}
       />
 
       <PhoneNumberComponent
@@ -189,7 +183,7 @@ export const FunctionalForm = ({
 
       <ErrorMessage
         message={phoneNumberErrorMessage}
-        show={Boolean(trigger && isPhoneValid(phoneNumber))}
+        show={Boolean(errorShow && isPhoneValid(phoneNumber))}
       />
 
       <input type="submit" value="Submit" />

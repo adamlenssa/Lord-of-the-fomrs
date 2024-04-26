@@ -10,11 +10,7 @@ export const FunctionalApp = () => {
     <>
       <h2>Functional</h2>
       <ProfileInformation userData={userInformation} />
-      <FunctionalForm
-        setUserData={(UserInformation) => {
-          setUserInformation(UserInformation);
-        }}
-      />
+      <FunctionalForm setUserData={setUserInformation} />
     </>
   );
 };
